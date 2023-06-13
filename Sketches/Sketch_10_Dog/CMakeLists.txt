@@ -1,0 +1,25 @@
+idf_component_register(
+    SRCS "main.cpp"
+    "BatteryPower.cpp"
+    "BluetoothService.cpp"
+    "BuiltInLed.cpp"
+    "Buzzer.cpp"
+    "CameraService.cpp"
+    "DanceMovements.cpp"
+    "Freenove_PCA9685.cpp"
+    "MassageQueue.cpp"
+    "MessageParser.cpp"
+    "Motion.cpp"
+    "PreferencesPro.cpp"
+    "Public.cpp"
+    "RGBLED_WS2812.cpp"
+    "RobotDefinitions.cpp"
+    "TaskCommandService.cpp"
+    "TaskManager.cpp"
+    "TaskMotionService.cpp"
+    "TouchPad.cpp"
+    "UltrasonicRanging.cpp"
+    
+   
+    INCLUDE_DIRS ""
+)
