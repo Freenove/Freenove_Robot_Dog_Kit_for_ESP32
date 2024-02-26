@@ -1,0 +1,1 @@
+WiFi#Your WiFi Name*PSD#Your WiFi Password*IP#192.168.1.170
