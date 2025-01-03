@@ -8,19 +8,19 @@ for x in range(1,4):
         flag=flag | 0x01
         break
 for x in range(1,4):
-    if os.system("pip3 install pyserial==3.5") == 0:
+    if os.system("pip3 install pyserial") == 0:
         flag=flag | 0x02
         break
 for x in range(1,4):
-    if os.system("pip3 install PyQt5==5.15.4") == 0:
+    if os.system("pip3 install PyQt5") == 0:
         flag=flag | 0x04
         break
 for x in range(1,4):
-    if os.system("pip3 install Pillow==9.1.1") == 0:
+    if os.system("pip3 install Pillow") == 0:
         flag=flag | 0x08
         break
 for x in range(1,4):
-    if os.system("pip3 install opencv-python-headless==4.5.4.60") == 0:
+    if os.system("pip3 install opencv-python-headless") == 0:
         flag=flag | 0x10
         break
 
