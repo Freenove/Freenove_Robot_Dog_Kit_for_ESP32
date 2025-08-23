@@ -32,6 +32,9 @@ Sketch
 
 Open “Sketch_03_Buzzer” folder in “ **Freenove_Robot_Dog_Kit_for_ESP32\\Sketches** ” and then double-click “Sketch_03_Buzzer.ino”.
 
+.. image:: ../_static/imgs/8_Buzzer/Chapter08_03.png
+    :align: center
+
 Sketch_03_Buzzer
 ==============================================
 
@@ -130,6 +133,7 @@ The melody playback function. Every time this function is called, a thread will 
 Buzzer thread callback function. Each time the thread is executed, the vTaskDelete(xTaskGetCurrentTaskHandle()) function is automatically called to close its own thread.
 
 .. code-block:: c
+    :linenos:
 
     void task_Buzzered(void *pvParameters) {
     if (enableBuzzered) {

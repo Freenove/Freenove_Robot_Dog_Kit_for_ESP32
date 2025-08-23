@@ -102,6 +102,7 @@ RGB LEDs configuration function. Call this function to set the colored light mod
 LED display function. The thread will control the RGB LEDs to emit different colors and phenomena according to the configuration information of ledConfig_t.
 
 .. code-block:: c
+    :linenos:
 
     void task_showRGBLeds(void *pvParameters) {
     switch (ledConfig_t.mode) {

@@ -14,7 +14,9 @@ The ultrasonic ranging module uses the principle that ultrasonic waves will be s
 
 The HC-SR04 ultrasonic ranging module integrates both an ultrasonic transmitter and a receiver. The transmitter is used to convert electrical signals (electrical energy) into high frequency (beyond human hearing) sound waves (mechanical energy) and the function of the receiver is opposite of this. The picture and the diagram of the HC SR04 ultrasonic ranging module are shown below:
 
-.. list-table:: 
+.. list-table::
+    :align: center
+    :class: table-line
 
     * - |Chapter10_01|
       - |Chapter10_02|
@@ -24,19 +26,23 @@ The HC-SR04 ultrasonic ranging module integrates both an ultrasonic transmitter 
 
 Pin description:
 
-+------+------------------+
-| Pin  |   Description    |
-+======+==================+
-| VCC  | power supply pin |
-+------+------------------+
-| Trig | trigger pin      |
-+------+------------------+
-| Echo | Echo pin         |
-+------+------------------+
-| GND  | GND              |
-+------+------------------+
+.. table:: 
+    :class: zebra
+    :align: center
 
-Technical specs:
+    +------+------------------+
+    | Pin  |   Description    |
+    +======+==================+
+    | VCC  | power supply pin |
+    +------+------------------+
+    | Trig | trigger pin      |
+    +------+------------------+
+    | Echo | Echo pin         |
+    +------+------------------+
+    | GND  | GND              |
+    +------+------------------+
+
+**Technical specs:**
 
 Working voltage: 5V
 
@@ -126,7 +132,7 @@ The function that gets ultrasonic data.
 
 About function **pulseIn()**:
 
-.. py::function:: int pulseIn(int pin, int level, int timeout);
+.. py:function:: int pulseIn(int pin, int level, int timeout);
 
     **pin:** the number of the Arduino pin on which you want to read the pulse. Allowed data types: int.
     

@@ -102,6 +102,9 @@ Upload the sketch to esp32 and you can control the robot dog to make any action 
 
 Please note: If your robot dog has not been calibrated, please navigate back to :ref:`Chapter 2 <fnk0062/codes/tutorial/2_robot_assembly:chapter 2 robot assembly>` to calibrate the robot dog first.
 
+.. image:: ../_static/imgs/15_Dog/Chapter15_13.png
+    :align: center
+
 The following is the code:
 
 .. literalinclude:: ../../../freenove_Kit/Sketches/Sketch_10_Dog/Sketch_10_Dog.ino

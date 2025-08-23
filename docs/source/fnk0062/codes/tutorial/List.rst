@@ -9,11 +9,11 @@ Robot Expansion Board for ESP32
 
 .. list-table:: 
     :align: center
+    :class: table-line
 
-    * - Top
+    * - **Top**
     * - |List00|
-
-    * - Bottom
+    * - **Bottom**
     * - |List01|
 
 .. |List00| image:: ../_static/imgs/List/List00.png
@@ -24,6 +24,8 @@ ESP32
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - ESP32
       - OV2640
@@ -45,6 +47,8 @@ Transmission
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - Servo package x12
     * - |List05|
@@ -56,6 +60,8 @@ Acrylic
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - Acrylic x1
     * - |List06|
@@ -67,6 +73,8 @@ Electronic
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - Extension board for camera
       - HC-SR04 ultrasonic module
@@ -83,29 +91,34 @@ Electronic
 Tools
 ***********************************************
 
-+---------------------------+-----------------+
-|Cross screwdriver (3mm) x1 |                 |
-|                           |Cable tidy x80cm |
-|Cross screwdriver (2mm) x1 |                 |
-|                           ||List11|         |
-||List10|                   |                 |
-|                           |                 |
-+---------------------------+-----------------+
-|Pry bar                    |USB cable        |
-|                           |                 |
-||List12|                   ||List13|         |
-|                           |                 |
-+---------------------------+-----------------+
-|FPC camera cable                             |
-|                                             |
-||List14|                                     |
-|                                             |
-+---------------------------+-----------------+
-|3P LED cable               |4P jumper wire   |
-|                           |                 |
-||List15|                   ||List16|         |
-|                           |                 |
-+---------------------------+-----------------+
+.. table:: 
+    :class: table-line
+    :width: 80%
+    :align: center
+
+    +---------------------------+-----------------+
+    |Cross screwdriver (3mm) x1 |                 |
+    |                           |Cable tidy x80cm |
+    |Cross screwdriver (2mm) x1 |                 |
+    |                           ||List11|         |
+    ||List10|                   |                 |
+    |                           |                 |
+    +---------------------------+-----------------+
+    |Pry bar                    |USB cable        |
+    |                           |                 |
+    ||List12|                   ||List13|         |
+    |                           |                 |
+    +---------------------------+-----------------+
+    |FPC camera cable                             |
+    |                                             |
+    ||List14|                                     |
+    |                                             |
+    +---------------------------+-----------------+
+    |3P LED cable               |4P jumper wire   |
+    |                           |                 |
+    ||List15|                   ||List16|         |
+    |                           |                 |
+    +---------------------------+-----------------+
 
 .. |List10| image:: ../_static/imgs/List/List10.png
 .. |List11| image:: ../_static/imgs/List/List11.png
@@ -120,6 +133,8 @@ Calibration
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - Calibration graph
     * - |List17|
@@ -131,6 +146,8 @@ Required but NOT Included Parts
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - 2 X 18650 flat top batteries with :blue:`continuous discharge current ≥ 10A`
         

@@ -14,7 +14,7 @@ This book aims to help enthusiasts assemble the robot dog and download related c
 
 https://github.com/Freenove/Freenove_ESP32_Dog_Firmware
 
-You can refer to another esp32 kit designed for starters: :red:`Freenove_Ultimate_Starter_Kit_for_ESP32.`
+You can refer to another esp32 kit designed for starters: :combo:`red font-bolder:Freenove_Ultimate_Starter_Kit_for_ESP32.`
 
 https://www.freenove.com/store.html
 
@@ -25,6 +25,8 @@ ESP32-Wrover comes with two different antenna packages, PCB (on-board) antenna a
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - PCB on-board antenna 
       - IPEX antenna 
@@ -47,79 +49,83 @@ To learn what each GPIO corresponds to, please refer to the following table.
 
 The functions of the pins are allocated as follows:
 
-+--------------+-----------------------------------------+------------+
-|Pins of ESP32 |Functions                                |Description |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO36        |                                         |CSI_Y6      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO39        |                                         |CSI_Y7      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO34        |                                         |CSI_Y8      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO35        |                                         |CSI_Y9      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO25        |                                         |CSI_VYSNC   |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO26        |                                         |SIOD        |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO27        |                                         |SIOC        |
-|              |                                         |            |
-+--------------+Camera interface                         +------------+
-|GPIO4         |                                         |CSI_Y2      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO5         |                                         |CSI_Y3      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO18        |                                         |CSI_Y4      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO19        |                                         |CSI_Y5      |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO21        |                                         |XCLK        |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO22        |                                         |PCLK        |
-|              |                                         |            |
-+--------------+                                         +------------+
-|GPIO23        |                                         |HREF        |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO13        |                                         |SDA         |
-|              |                                         |            |
-+--------------+I2C port                                 +------------+
-|GPIO14        |                                         |SCL         |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO32        |Battery detection / Ultrasonic-Trig port |A6 / Trig   |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO12        |Ultrasonic-Echo port                     |Echo        |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO33        |Buzzer port                              |Buzzer      |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO15        |Touch Sensor port                        |Touch       |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO0         |WS2812 port                              |WS2812      |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
-|GPIO1         |                                         |TX          |
-|              |                                         |            |
-+--------------+Serial port                              +------------+
-|GPIO3         |                                         |RX          |
-|              |                                         |            |
-+--------------+-----------------------------------------+------------+
+.. table:: 
+    :class: table-line
+    :width: 70%
+    :align: center
+
+    +--------------+-----------------------------------------+------------+
+    |Pins of ESP32 |Functions                                |Description |
+    +==============+=========================================+============+
+    |GPIO36        |                                         |CSI_Y6      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO39        |                                         |CSI_Y7      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO34        |                                         |CSI_Y8      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO35        |                                         |CSI_Y9      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO25        |                                         |CSI_VYSNC   |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO26        |                                         |SIOD        |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO27        |                                         |SIOC        |
+    |              |                                         |            |
+    +--------------+Camera interface                         +------------+
+    |GPIO4         |                                         |CSI_Y2      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO5         |                                         |CSI_Y3      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO18        |                                         |CSI_Y4      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO19        |                                         |CSI_Y5      |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO21        |                                         |XCLK        |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO22        |                                         |PCLK        |
+    |              |                                         |            |
+    +--------------+                                         +------------+
+    |GPIO23        |                                         |HREF        |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO13        |                                         |SDA         |
+    |              |                                         |            |
+    +--------------+I2C port                                 +------------+
+    |GPIO14        |                                         |SCL         |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO32        |Battery detection / Ultrasonic-Trig port |A6 / Trig   |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO12        |Ultrasonic-Echo port                     |Echo        |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO33        |Buzzer port                              |Buzzer      |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO15        |Touch Sensor port                        |Touch       |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO0         |WS2812 port                              |WS2812      |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
+    |GPIO1         |                                         |TX          |
+    |              |                                         |            |
+    +--------------+Serial port                              +------------+
+    |GPIO3         |                                         |RX          |
+    |              |                                         |            |
+    +--------------+-----------------------------------------+------------+
 
 The hardware interfaces of ESP32 are distributed as follows:
 
@@ -130,6 +136,8 @@ Compare the left and right images. We have boxed off the resources on the ESP32 
 
 .. list-table:: 
     :align: center
+    :class: table-line
+    :header-rows: 1
 
     * - Box color
       - Corresponding resources introduction

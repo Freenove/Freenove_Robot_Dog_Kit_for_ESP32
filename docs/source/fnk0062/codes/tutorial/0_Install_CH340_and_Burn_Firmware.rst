@@ -5,38 +5,43 @@ Chapter 0 Install CH340 and Burn Firmware
 Check Firmware
 ******************
 
-:red:`Please note that the firmware has been burnt by default, so generally, you do not need to burn it again.`
+:combo:`red font-bolder:Please note that the firmware has been burnt by default, so generally, you do not need to burn it again.`
 
-:red:`Please follow the steps below to check whether firmware has been burnt:`
+:combo:`red font-bolder:Please follow the steps below to check whether firmware has been burnt:`
 
-+-----------------------------------------------------------------------------------------------------------+
-| 1.Plug the ESP32 to the expansion board.                                                                  |
-|                                                                                                           |
-| |Chapter00_00|                                                                                            |
-|                                                                                                           |
-| :red:`Pay attention to the orientation of the ESP32 and make sure it is plugged in correctly; otherwise,` |
-|                                                                                                           |
-| :red:`it may damage the robot.`                                                                           |
-+-----------------------------------------------------------------------------------------------------------+
-| 2.Connect ESP32 to your computer with a USB cable.                                                        |
-|                                                                                                           |
-| After connecting, you can see the yellow LED on ESP32 stay ON and the blue LED blink twice every second.  |
-|                                                                                                           |
-| Meanwhile, the buzzer makes 4 warning sounds to tell you the camera has not yet been installed and then   |
-|                                                                                                           |
-| a pleasant sound to indicate the finish of initialization.                                                |
-|                                                                                                           |
-| |Chapter00_01|                                                                                            |
-|                                                                                                           |
-| If the above phenomenas happen, it means the firmware has been burnt.                                     |
-+-----------------------------------------------------------------------------------------------------------+
+.. table:: 
+    :class: table-line
+    :width: 80%
+    :align: center
+
+    +-----------------------------------------------------------------------------------------------------------+
+    | 1.Plug the ESP32 to the expansion board.                                                                  |
+    |                                                                                                           |
+    | |Chapter00_00|                                                                                            |
+    |                                                                                                           |
+    | :red:`Pay attention to the orientation of the ESP32 and make sure it is plugged in correctly; otherwise,` |
+    |                                                                                                           |
+    | :red:`it may damage the robot.`                                                                           |
+    +-----------------------------------------------------------------------------------------------------------+
+    | 2.Connect ESP32 to your computer with a USB cable.                                                        |
+    |                                                                                                           |
+    | After connecting, you can see the yellow LED on ESP32 stay ON and the blue LED blink twice every second.  |
+    |                                                                                                           |
+    | Meanwhile, the buzzer makes 4 warning sounds to tell you the camera has not yet been installed and then   |
+    |                                                                                                           |
+    | a pleasant sound to indicate the finish of initialization.                                                |
+    |                                                                                                           |
+    | |Chapter00_01|                                                                                            |
+    |                                                                                                           |
+    | If the above phenomenas happen, it means the firmware has been burnt.                                     |
+    +-----------------------------------------------------------------------------------------------------------+
 
 .. |Chapter00_00| image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_00.png
 .. |Chapter00_01| image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_01.png
 
-:red:`If the firmware has been burnt on your robot, please skip to Chapter 1.`
+:combo:`red font-bolder:If the firmware has been burnt on your robot, please skip to` :ref:`Chapter 1 <fnk0062/codes/tutorial/1_install_freenove_app:chapter 1 install freenove app>`.
 
-:red:`Otherwise, please continue with the following steps.`
+:combo:`red font-bolder:Otherwise, please continue with the following steps.`
 
 Please send emails to us (support@freenove.com) if you have any questions regarding the robot.
 
@@ -45,7 +50,7 @@ Install CH340 Driver
 
 .. raw:: html
 
-   <iframe height="500" width="690" src="https://www.youtube.com/embed/DfqqGdL_9hc" frameborder="0" allowfullscreen></iframe>
+   <iframe style="display: block; margin: 0 auto;" height="421.875" width="750" src="https://www.youtube.com/embed/DfqqGdL_9hc" frameborder="0" allowfullscreen></iframe>
 
 The computer uploads codes to ESP32 via CH340, so we need to install CH340 driver on our computer before using.
 
@@ -54,7 +59,7 @@ The computer uploads codes to ESP32 via CH340, so we need to install CH340 drive
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_02.png
     :align: center
 
-If you would not like to download the installation package, you can open “:red:`Freenove_Robot_Dog_Kit_for_ESP32/CH340`”. We have prepared the installation package.
+If you would not like to download the installation package, you can open “:combo:`red font-bolder:Freenove_Robot_Dog_Kit_for_ESP32/CH340`”. We have prepared the installation package.
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_03.png
     :align: center
@@ -89,7 +94,7 @@ If CH340 (COMx) does not show on your computer, you need to install CH340 driver
 Install CH340 Driver
 -----------------------------------------
 
-4.	Open “:red:`Freenove_Robot_Dog_Kit_for_ESP32/CH340/Windows/`”. 
+4.	Open “:combo:`red font-bolder:Freenove_Robot_Dog_Kit_for_ESP32/CH340/Windows/`”. 
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_07.png
     :align: center
@@ -141,7 +146,7 @@ Install CH340
 
 If you would not like to download the installation package, you can open “Freenove_Robot_Dog_Kit_for_ESP32/CH340”. We have prepared the installation package.
 
-Open the folder “:red:`Freenove_Robot_Dog_Kit_for_ESP32/CH340/MAC/`”
+Open the folder “:combo:`red font-bolder:Freenove_Robot_Dog_Kit_for_ESP32/CH340/MAC/`”
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_14.png
     :align: center
@@ -169,13 +174,6 @@ If CH340 is still not installed after the above steps, please refer to the ReadM
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_19.png
     :align: center
 
-Burn the Firmware
-*********************************
-
-For this product, ESP32 has burned the required firmware by default. If your ESP32 does not have the firmware or the firmware does not work, please re-burn the firmware with the following steps.
-
-We will explain respectively for Windows, Mac OS and Linux systems. 
-
 Linux
 =================================
 
@@ -196,7 +194,7 @@ If the driver has been installed, you can determine the port used by ESP32 to co
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_21.png
     :align: center
 
-Compare the results. As shown below, :red:`/dev/ttyUSB0` is the port that ESP32 communicates with your computer.
+Compare the results. As shown below, :combo:`red font-bolder:/dev/ttyUSB0` is the port that ESP32 communicates with your computer.
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_22.png
     :align: center
@@ -206,23 +204,23 @@ If your computer has installed CH340, you can click here to skip to the next ste
 Install CH340
 --------------------------------------
 
-If you connect the ESP32 to your computer but it does not detect /dev/ttyUSB0, then it has not installed CH340 yet.
+If you connect the ESP32 to your computer but it does not detect :combo:`red font-bolder:/dev/ttyUSB0`, then it has not installed CH340 yet.
 
 Please follow the steps below to install CH340 driver.
 
-We have prepared the installation package for you: “Freenove_Robot_Dog_Kit_for_ESP32/CH340/LINUX/”.
+We have prepared the installation package for you: :combo:`red font-bolder:“Freenove_Robot_Dog_Kit_for_ESP32/CH340/LINUX/”`.
 
 1.	Enter the folder on terminal: **cd Freenove_Robot_Dog_Kit_for_ESP32/CH340/Linux/**
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_23.png
     :align: center
 
-2.	Unzip the installation package: unzip CH341SER_LINUX.ZIP
+2.	Unzip the installation package: **unzip CH341SER_LINUX.ZIP**
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_24.png
     :align: center
 
-3.	Enter the unzipped folder and type in the command sudo make to compile and generate the file ch34x.ko.
+3.	Enter the unzipped folder and type in the command **sudo make** to compile and generate the file ch34x.ko.
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_25.png
     :align: center
@@ -236,6 +234,13 @@ We have prepared the installation package for you: “Freenove_Robot_Dog_Kit_for
 
 So far, the ch340 driver has been installed.
 
+Burn the Firmware
+*********************************
+
+For this product, ESP32 has burned the required firmware by default. If your ESP32 does not have the firmware or the firmware does not work, please re-burn the firmware with the following steps.
+
+We will explain respectively for Windows, Mac OS and Linux systems. 
+
 Windows
 ===================================
 
@@ -244,12 +249,12 @@ First, connect ESP32 to your computer with a USB cable.
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_27.png
     :align: center
 
-Second, open “windows.bat” under the directory of :red:`Freenove_Robot_Dog_Kit_for_ESP32/Firmware/Windows` with txt editor, and modify the COMx in the file according to the port USB-SERIAL CH340 (COMx) on your computer.
+Second, open “windows.bat” under the directory of :combo:`red font-bolder:Freenove_Robot_Dog_Kit_for_ESP32/Firmware/Windows` with txt editor, and modify the COMx in the file according to the port USB-SERIAL CH340 (COMx) on your computer.
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_28.png
     :align: center
 
-:red:`Note: Do NOT modify other contents.`
+:combo:`red font-bolder:Note: Do NOT modify other contents.`
 
 Third, save and close the file. Double-click it to run and wait for it to finish downloading.
 
@@ -304,7 +309,7 @@ The port number may vary among different computers. Here we take “/dev/cu.usbs
 
 Note: Please make sure only the port number is changed and other information, including space is not changed; otherwise, the firmware may fail to burn.
 
-8.	Enter the command: cd :red:`Freenove_Robot_Dog_Kit_for_ESP32/Firmware/MAC OS/` and python3 mac.py one by one to install the firmware to esp32.
+8.	Enter the command: **cd** :combo:`red font-bolder:Freenove_Robot_Dog_Kit_for_ESP32/Firmware/MAC OS/` and python3 mac.py one by one to install the firmware to esp32.
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_37.png
     :align: center
@@ -364,7 +369,7 @@ If it has not, please run the command to install.
     
     The above command is to give permission to/dev/ttyUSB0. Without this, the code may fail to download.
 
-7.	Enter the directory of :red:`Freenove_Robot_Dog_Kit_for_ESP32/Firmware/Linux` and enter the command **python3 linux.py**
+7.	Enter the directory of :combo:`red font-bolder:Freenove_Robot_Dog_Kit_for_ESP32/Firmware/Linux` and enter the command **python3 linux.py**
 
 .. image:: ../_static/imgs/0_Install_CH340_and_Burn_Firmware/Chapter00_46.png
     :align: center  

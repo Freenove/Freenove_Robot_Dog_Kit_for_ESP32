@@ -2,7 +2,7 @@
 Chapter 12 Basic Motion
 ##############################################################################
 
-If you have any concerns, please feel free to contact us via support@freenove.com
+**If you have any concerns, please feel free to contact us via** support@freenove.com
 
 Schematic
 *****************************************
