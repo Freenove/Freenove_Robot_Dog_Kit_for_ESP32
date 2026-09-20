@@ -28,7 +28,7 @@ ESP32
     :header-rows: 1
 
     * - ESP32
-      - OV2640
+      - Camera
 
     * - |List02|
       - |List03|
