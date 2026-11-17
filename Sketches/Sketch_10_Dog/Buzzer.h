@@ -16,8 +16,8 @@
 #include "Public.h"
 #include "driver/ledc.h"
 
-// 蜂鸣器编译期总开关：1 = 启用，0 = 静音（调试阶段可关闭）
-#define BUZZER_ENABLE 0
+// Compile-time buzzer master switch: 1 = enabled, 0 = muted (useful while debugging)
+#define BUZZER_ENABLE 1
 
 #define MELODY_POWER_UP 0
 #define MELODY_LOW_POWER 1

@@ -1,22 +1,17 @@
 /**
  * @file BatteryPower.cpp
  * @author zhentao lin@freenove (support@freenove.com)
- * @brief Read, monitor and upload battery power.
+ * @brief Read, monitor and upload battery power. Using IDF-SDK ADC to read ESP32.
  * @version v1.2.0
  * @date 2026-11-17
- * 
+ *
  * @copyright Copyright (c) 2022. Freenove corporation.
- * 
+ *
+ * Originally based on Freenove ADC_DAC example (www.freenove.com, 2020/07/11).
  */
 
 #include "BatteryPower.h"
 
-/**********************************************************************
-  Filename    : ADC_DAC
-  Description : Using IDF-SDK function to read ADC of ESP32.
-  Auther      : www.freenove.com
-  Modification: 2020/07/11
-**********************************************************************/
 #include "esp_adc/adc_oneshot.h"
 #include "esp_adc/adc_cali.h"
 #include "esp_adc/adc_cali_scheme.h"

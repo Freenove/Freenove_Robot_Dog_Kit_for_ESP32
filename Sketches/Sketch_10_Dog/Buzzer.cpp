@@ -1,23 +1,18 @@
 /**
  * @file Buzzer.cpp
  * @author zhentao lin@freenove (support@freenove.com)
- * @brief Buzzer service.
+ * @brief Buzzer service. Using IDF-SDK PWM to control the buzzer.
  * @version v1.2.0
  * @date 2026-11-17
- * 
+ *
  * @copyright Copyright (c) 2022. Freenove corporation.
- * 
+ *
+ * Originally based on Freenove Alertor example (www.freenove.com, 2020/07/11).
  */
 
 #include "Buzzer.h"
 #include <iostream>
 using namespace std;
-/**********************************************************************
-  Filename    : Alertor
-  Description : Using IDF-SDK function to generate PWM control buzzer.
-  Auther      : www.freenove.com
-  Modification: 2020/07/11
-**********************************************************************/
 
 #define BUZZER_PIN (PIN_BUZZER)
 #define LEDC_GPIO (BUZZER_PIN)
