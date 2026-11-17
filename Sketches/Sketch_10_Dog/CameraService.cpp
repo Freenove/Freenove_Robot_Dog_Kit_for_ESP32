@@ -1,15 +1,17 @@
 /**
  * @file CameraService.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Wifi, Camera, Command Serivice.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
  */
 
 #include "CameraService.h"
+#include "img_converters.h"
+#include "sensor.h"
 
 #include <iostream>
 using namespace std;
@@ -51,7 +53,7 @@ void CameraService::configWifi()
 	// WiFi.disconnect();
 
 	String s = "FreenoveDog-" + getRobotId();
-	ssid_AP = (char *)malloc(s.length());
+	ssid_AP = (char *)malloc(s.length() + 1);
 	strcpy(ssid_AP, s.c_str());
 	// Serial.println(ssid_AP);
 }
@@ -148,11 +150,7 @@ void CameraService::establishAP(char *ssid, char *psd)
 
 void CameraService::establishAP(String ssid, String psd)
 {
-	char *c_ssid = (char *)malloc(ssid.length());
-	char *c_psd = (char *)malloc(psd.length());
-	strcpy(c_ssid, ssid.c_str());
-	strcpy(c_psd, psd.c_str());
-	establishAP(c_ssid, c_psd);
+	establishAP((char *)ssid.c_str(), (char *)psd.c_str());
 }
 
 void CameraService::establishSoftAP()
@@ -247,11 +245,7 @@ void CameraService::accessRouter(char *ssid, char *psd)
 
 void CameraService::accessRouter(String ssid, String psd)
 {
-	char *c_ssid = (char *)malloc(ssid.length());
-	char *c_psd = (char *)malloc(psd.length());
-	strcpy(c_ssid, ssid.c_str());
-	strcpy(c_psd, psd.c_str());
-	accessRouter(c_ssid, c_psd);
+	accessRouter((char *)ssid.c_str(), (char *)psd.c_str());
 }
 
 void CameraService::establishCameraServer(u16 port)
@@ -292,7 +286,7 @@ void CameraService::establishCmdServer(u16 port)
 	}
 }
 
-bool CameraService::cameraSetup()
+void CameraService::fillCameraPinConfig()
 {
 	config.ledc_channel = LEDC_CHANNEL_0;
 	config.ledc_timer = LEDC_TIMER_0;
@@ -308,63 +302,134 @@ bool CameraService::cameraSetup()
 	config.pin_pclk = PCLK_GPIO_NUM;
 	config.pin_vsync = VSYNC_GPIO_NUM;
 	config.pin_href = HREF_GPIO_NUM;
-	config.pin_sscb_sda = SIOD_GPIO_NUM;
-	config.pin_sscb_scl = SIOC_GPIO_NUM;
+	config.pin_sccb_sda = SIOD_GPIO_NUM;
+	config.pin_sccb_scl = SIOC_GPIO_NUM;
 	config.pin_pwdn = PWDN_GPIO_NUM;
 	config.pin_reset = RESET_GPIO_NUM;
-	config.xclk_freq_hz = 20000000;
-	config.pixel_format = PIXFORMAT_JPEG; // PIXFORMAT_RGB565; // PIXFORMAT_JPEG;
-	config.frame_size = FRAMESIZE_QVGA;
-	config.jpeg_quality = 10;
-	config.fb_count = 1;
+	config.xclk_freq_hz = 10000000;
 	config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
-	// psramFound();
-	// camera init
+	config.fb_location = CAMERA_FB_IN_PSRAM;
+	config.fb_count = 1;
+}
+
+bool CameraService::initCameraHardware()
+{
+	fillCameraPinConfig();
+	// Prefer hardware JPEG (OV2640 / OV3660). Sensors without JPEG (e.g. GC0308)
+	// return ESP_ERR_NOT_SUPPORTED; fall back to RGB565 and convert later with frame2jpg().
+	config.pixel_format = PIXFORMAT_JPEG;
+
 	esp_err_t err = esp_camera_init(&config);
+	if (err == ESP_ERR_NOT_SUPPORTED)
+	{
+		Serial.println("JPEG not supported by sensor, fallback to RGB565");
+		esp_camera_deinit();
+		config.pixel_format = PIXFORMAT_RGB565;
+		err = esp_camera_init(&config);
+	}
 	if (err != ESP_OK)
 	{
-		isCameraNormal = false;
 		Serial.printf("Camera init failed with error 0x%x\n", err);
 		return false;
 	}
-	camera_fb_t *fb = esp_camera_fb_get();
-	esp_camera_fb_return(fb);
-	// fb = esp_camera_fb_get();
-	if (fb != NULL)
+
+	configureDetectedSensor();
+	return true;
+}
+
+void CameraService::configureDetectedSensor()
+{
+	sensor_t *s = esp_camera_sensor_get();
+	if (s == NULL)
 	{
-		isCameraNormal = true;
-		Serial.printf("Camera configuration complete! %d\n", fb->len);
-		return true;
+		Serial.println("Camera sensor not found after init");
+		return;
+	}
+
+	uint16_t pid = s->id.PID;
+	Serial.printf("Camera sensor PID: 0x%x\n", pid);
+
+	if (pid == OV2640_PID)
+	{
+		Serial.println("Detected OV2640");
+		s->set_hmirror(s, 1);
+		s->set_vflip(s, 1);
+	}
+	else if (pid == OV3660_PID)
+	{
+		Serial.println("Detected OV3660");
+		s->set_hmirror(s, 1);
+		s->set_vflip(s, 0);
+	}
+	else if (pid == GC0308_PID)
+	{
+		Serial.println("Detected GC0308");
+		s->set_hmirror(s, 0);
+		delay(500);
+		s->set_vflip(s, 0);
 	}
 	else
 	{
+		Serial.println("Unknown camera sensor, using default mirror/flip");
+		s->set_hmirror(s, 1);
+		s->set_vflip(s, 0);
+	}
+
+	s->set_brightness(s, 1);
+	s->set_saturation(s, 0);
+	if (s->set_ae_level)
+	{
+		s->set_ae_level(s, -3);
+	}
+}
+
+bool CameraService::cameraSetup()
+{
+	config = {};
+	config.frame_size = FRAMESIZE_QVGA;
+	config.jpeg_quality = 12;
+
+	if (!initCameraHardware())
+	{
 		isCameraNormal = false;
-		vTaskDelay(10);
-		Serial.println("Camera failure. Please check the camera cable!");
-		Serial.println("Or you can continue to use the robot, except for the camera function");
 		return false;
 	}
+
+	camera_fb_t *fb = esp_camera_fb_get();
+	if (fb != NULL)
+	{
+		Serial.printf("Camera configuration complete! format=%d len=%d\n", (int)fb->format, fb->len);
+		esp_camera_fb_return(fb);
+		isCameraNormal = true;
+		return true;
+	}
+
+	isCameraNormal = false;
+	vTaskDelay(10);
+	Serial.println("Camera failure. Please check the camera cable!");
+	Serial.println("Or you can continue to use the robot, except for the camera function");
+	return false;
 }
 
 void CameraService::setCameraQuality(int quality)
 {
 	config.jpeg_quality = quality;
-	esp_err_t err = esp_camera_init(&config);
-	if (err != ESP_OK)
+	// Caller must ensure task_CameraService is idle: esp_camera_deinit() releases the driver the capture task runs on.
+	esp_camera_deinit();
+	if (!initCameraHardware())
 	{
-		Serial.printf("Camera init failed with error 0x%x", err);
-		return;
+		isCameraNormal = false;
 	}
 }
 
 void CameraService::setCameraResolution(framesize_t frameSize)
 {
 	config.frame_size = frameSize;
-	esp_err_t err = esp_camera_init(&config);
-	if (err != ESP_OK)
+	// Caller must ensure task_CameraService is idle: esp_camera_deinit() releases the driver the capture task runs on.
+	esp_camera_deinit();
+	if (!initCameraHardware())
 	{
-		Serial.printf("Camera init failed with error 0x%x", err);
-		return;
+		isCameraNormal = false;
 	}
 }
 
@@ -401,53 +466,75 @@ void task_CameraService(void *pvParameters)
 	}
 	Serial.print("task_CameraService() function running on core: ");
 	Serial.println(xPortGetCoreID());
-	uint32_t t4 = 0, t0 = 0, t1 = 0, t2 = 0, t3 = 0;
+	uint32_t t1 = 0, t2 = 0;
 	server_Camera.setNoDelay(true);
 	while (true)
 	{
-		Serial.print("!");
+		//Serial.print("!");
 		vTaskDelay(1000);
-		WiFiClient client = server_Camera.available(); // listen for incoming clients
+		WiFiClient client = server_Camera.accept(); // listen for incoming clients
 		if (client)									   // if you get a client,
 		{
 			setMelodyToQueue(MELODY_CAM_CONNECT_SUCCESS);
 			client.setNoDelay(true);
 			Serial.println("Camera Server connected to a client."); // print a message out the serial port
+			Serial.printf("[DIAG] cam fd=%d, heap=%u\r\n", client.fd(), (unsigned)ESP.getFreeHeap());
 			String currentLine = "";								// make a String to hold incoming data from the client
 			camera_fb_t *fb = NULL;
 			while (client.connected())
 			{
-				t0 = millis();
 				fb = esp_camera_fb_get();
-				// camera_fb_t *fb = esp_camera_fb_get();
 				t1 = millis();
 				if (fb != NULL)
 				{
-					size_t fb_size = fb->len;
+					uint8_t *jpg_buf = NULL;
+					size_t jpg_len = 0;
+					bool jpg_converted = false;
+
+					if (fb->format != PIXFORMAT_JPEG)
+					{
+						// GC0308 etc.: capture RGB565 then compress to JPEG for the existing client protocol.
+						jpg_converted = frame2jpg(fb, cs.rgb2jpgQuality, &jpg_buf, &jpg_len);
+						esp_camera_fb_return(fb);
+						fb = NULL;
+						if (!jpg_converted || jpg_buf == NULL)
+						{
+							Serial.println("frame2jpg failed");
+							continue;
+						}
+					}
+					else
+					{
+						jpg_buf = fb->buf;
+						jpg_len = fb->len;
+					}
+
 					uint8_t slen[4];
-					slen[0] = fb_size >> 0;
-					slen[1] = fb_size >> 8;
-					slen[2] = fb_size >> 16;
-					slen[3] = fb_size >> 24;
+					slen[0] = jpg_len >> 0;
+					slen[1] = jpg_len >> 8;
+					slen[2] = jpg_len >> 16;
+					slen[3] = jpg_len >> 24;
 					client.write(slen, 4);
-					size_t sz = client.write(fb->buf, fb_size);
+					size_t sz = client.write(jpg_buf, jpg_len);
 					t2 = millis();
-					esp_camera_fb_return(fb);
-					t3 = millis();
-					// client.flush();
-					// Serial.printf("slen: %d,%d,%d,%d \n", slen[0], slen[1], slen[2], slen[3]);
-					// Serial.printf("sz:%zu, rt:%zu, g:%zu, ts:%zu,\t t: %zu \n", fb_size, sz, t1 - t0, t2 - t1, t3 - t0);
-					Serial.printf("sz:%zu, ts:%zu\n", fb_size, t2 - t1);
-					//  Serial.printf("fb_size:%ld, fb_get:%ld, tcpSend:%ld, fb_ret:%ld, all1: %ld, All2: %ld \n", fb->len, t1 - t0, t2 - t1, t3 - t2, t3 - t0, t3 - t4);
-					// Serial.printf("l:%zu, sz1:%zu, sz:%zu, g:%zu, ts:%zu,\t t: %zu \n", fb->len, fb_size, sz, t1 - t0, t2 - t1, t3 - t0);
+
+					if (fb != NULL)
+					{
+						esp_camera_fb_return(fb);
+						fb = NULL;
+					}
+					if (jpg_converted && jpg_buf != NULL)
+					{
+						free(jpg_buf);
+						jpg_buf = NULL;
+					}
+
+					Serial.printf("sz:%zu, ts:%zu\n", jpg_len, (size_t)(t2 - t1));
 					if (sz == 0)
 					{
 						client.stop();
-						// server_Camera.disconnect();
-						Serial.printf("Socket send error, please retry ! l:%zu, sz:%zu \n", fb->len, sz);
+						Serial.printf("Socket send error, please retry ! l:%zu, sz:%zu \n", jpg_len, sz);
 					}
-					// Serial.println("fb_size:" + String(fb->len) + " fb_get:" + String(t1 - t0) + " tcpSend:" + String(t2 - t1) + " fb_ret:" + String(t3 - t2) + " all1:" + String(t3 - t4) + " All2:" + String(t3 - t4));
-					// vTaskDelay(5);
 				}
 				else
 				{
@@ -457,9 +544,7 @@ void task_CameraService(void *pvParameters)
 					Serial.println("Or Whether the buzzer is abnormal ?");
 					setMelodyToQueue(MELODY_CAM_FAILURE);
 					vTaskDelay(3000);
-					// cs.begin();
 				}
-				t4 = t3;
 			}
 			// close the connection:
 			client.stop();
@@ -481,12 +566,13 @@ void task_CmdService(void *pvParameters)
 	while (1)
 	{
 		vTaskDelay(1000);
-		WiFiClient client = server_Cmd.available(); // listen for incoming clients
+		WiFiClient client = server_Cmd.accept(); // listen for incoming clients
 		if (client)
 		{															 // if you get a client,
 			Serial.println("Command Server connected to a client."); // print a message out the serial port
+			Serial.printf("[DIAG] cmd fd=%d, heap=%u\r\n", client.fd(), (unsigned)ESP.getFreeHeap());
 			client.setTimeout(2000);
-			bleStop();
+			bleDisconnectClient();
 			isWifiConnected = true;
 			String currentLine = ""; // make a String to hold incoming data from the client
 			while (client.connected())
@@ -502,7 +588,7 @@ void task_CmdService(void *pvParameters)
 			client.stop();
 			isWifiConnected = false;
 			Serial.println("Command Client Disconnected.");
-			bleRestart();
+			clearRxLineBuffers();
 		}
 	}
 }

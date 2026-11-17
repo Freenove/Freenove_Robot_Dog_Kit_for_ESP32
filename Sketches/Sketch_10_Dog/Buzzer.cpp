@@ -1,9 +1,9 @@
 /**
  * @file Buzzer.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Buzzer service.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -32,33 +32,27 @@ int melody = -1;
 
 void setupBuzzer()
 {
-    ledc_timer_config_t ledc_timer = {
-        .speed_mode = LEDC_MODE, // timer mode
-        {
-            .duty_resolution = LEDC_TIMER_10_BIT // resolution of PWM duty
-        },
-        .timer_num = LEDC_TIMER, // timer index
-        .freq_hz = 5000,         // frequency of PWM signal
-        .clk_cfg = LEDC_AUTO_CLK};
+    ledc_timer_config_t ledc_timer = {};
+    ledc_timer.speed_mode = LEDC_MODE;              // timer mode
+    ledc_timer.duty_resolution = LEDC_TIMER_10_BIT; // resolution of PWM duty
+    ledc_timer.timer_num = LEDC_TIMER;              // timer index
+    ledc_timer.freq_hz = 5000;                      // frequency of PWM signal
+    ledc_timer.clk_cfg = LEDC_AUTO_CLK;
 
     ledc_timer_config(&ledc_timer);
 
-    ledc_channel_config_t ledc_channel = {
-        .gpio_num = LEDC_GPIO,
-        .speed_mode = LEDC_MODE,
-        .channel = LEDC_CHANNEL,
-        .intr_type = LEDC_INTR_DISABLE,
-        .timer_sel = LEDC_TIMER,
-        .duty = 0,
-        .hpoint = 0};
+    ledc_channel_config_t ledc_channel = {};
+    ledc_channel.gpio_num = LEDC_GPIO;
+    ledc_channel.speed_mode = LEDC_MODE;
+    ledc_channel.channel = LEDC_CHANNEL;
+    ledc_channel.intr_type = LEDC_INTR_DISABLE;
+    ledc_channel.timer_sel = LEDC_TIMER;
+    ledc_channel.duty = 0;
+    ledc_channel.hpoint = 0;
 
     ledc_channel_config(&ledc_channel);
 
     ledc_fade_func_install(0);
-
-    // ledcAttachPin(BUZZER_PIN, LEDC_CHANNEL);       // attach the led pin to pwm channel
-    ledcSetup(LEDC_CHANNEL, 10, LEDC_TIMER_10_BIT); // setup pwm channel
-    // ledcWriteTone(LEDC_CHANNEL, 0);
 }
 
 void setBuzzer(uint16_t freq)
@@ -124,6 +118,7 @@ void task_Buzzered(void *pvParameters)
     // Serial.println(xPortGetCoreID());
     //   while (1)
     {
+#if BUZZER_ENABLE
         if (enableBuzzered)
         {
             switch (melody)
@@ -180,8 +175,13 @@ void task_Buzzered(void *pvParameters)
             }
             // Serial.printf("buzzered : %d \n", cnt++);
         }
+#endif
         // Serial.printf("taskHandle_Buzzered2 : %d \n", eTaskGetState(taskHandle_Buzzered));
         // cout << "taskHandle_Buzzered2 : " << eTaskGetState(taskHandle_Buzzered) << " " << taskHandle_Buzzered;
+    }
+    if (taskHandle_Buzzered == xTaskGetCurrentTaskHandle())
+    {
+        taskHandle_Buzzered = NULL;
     }
     vTaskDelete(xTaskGetCurrentTaskHandle());
 }

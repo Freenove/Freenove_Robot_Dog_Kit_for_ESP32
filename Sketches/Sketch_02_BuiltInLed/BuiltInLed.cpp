@@ -1,15 +1,3 @@
-
-/**
- * @file BuiltInLed.cpp
- * @author suhayl@freenove (support@freenove.com)
- * @brief Built in led service.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #include "BuiltInLed.h"
 
 uint32_t sqValue = 0b00000101;

@@ -1,18 +1,74 @@
 /**
- * @file main.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @file Sketch_10_Dog.cpp
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Program entry.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
  */
 
 #include "Public.h"
+#include "esp_heap_caps.h"
 
-DataQueue<String> mqMotion(2);  //	Motion message queue, When there are too many messages, some messages can be ignored to reduce latency.
+DataQueue<String> mqMotion(5);  //	Motion message queue, When there are too many messages, some messages can be ignored to reduce latency.
 DataQueue<String> mqInfo(100);  //  Info message queue, Important, can not ignore.
+
+#define RX_LINE_MAX_LEN 128
+#define MOTION_STOP_MSG "F#0#0#0#8#\n"
+
+String bleInputString = "";
+String wifiInputString = "";
+
+void clearRxLineBuffers() {
+  bleInputString = "";
+  wifiInputString = "";
+}
+
+// The stop command is kept out of the queue until every queued motion has been taken,
+// so that stopping is always the last motion action executed.
+static volatile bool motionStopPending = false;
+static uint32_t motionDropCount = 0;
+
+static bool isStopMotionMsg(String msg) {
+  if (msg.charAt(0) != ACTION_MOVE_ANY) {
+    return false;
+  }
+  int p1 = msg.indexOf('#');
+  int p2 = msg.indexOf('#', p1 + 1);
+  int p3 = msg.indexOf('#', p2 + 1);
+  int p4 = msg.indexOf('#', p3 + 1);
+  if (p1 < 0 || p2 < 0 || p3 < 0) {
+    return false;
+  }
+  if (p4 < 0) {
+    p4 = msg.length();
+  }
+  return msg.substring(p1 + 1, p2).toInt() == 0 &&
+         msg.substring(p2 + 1, p3).toInt() == 0 &&
+         msg.substring(p3 + 1, p4).toInt() == 0;
+}
+
+static void enqueueMotion(String msg) {
+  if (mqMotion.isFull()) {
+    String dropped = mqMotion.out();
+    motionDropCount++;
+    Serial.print("mqMotion full, drop oldest: ");
+    Serial.print(dropped);
+    Serial.printf("drop count: %u\r\n", (unsigned)motionDropCount);
+  }
+  mqMotion.enter(msg);
+  controlTask(TASK_MOTION_SERVICE, TASK_RESUME);
+}
+
+void flushPendingMotionStop() {
+  if (motionStopPending && mqMotion.isEmpty()) {
+    motionStopPending = false;
+    Serial.println("motion stop enqueue");
+    enqueueMotion(String(MOTION_STOP_MSG));
+  }
+}
 
 void setup() {
   Serial.begin(115200);
@@ -46,13 +102,19 @@ void loop() {
   task_CommandService(NULL);
   task_BleUploadService(NULL);
   task_showBuiltInLed(NULL);
+  flushPendingMotionStop();
   vTaskDelay(20);
+  /*
   static uint32_t lastT = 0;
-  if (millis() - lastT > 1000) {
-    // Serial.printf("Total heap: %d\r\n", ESP.getHeapSize());
-    // Serial.printf("Free heap: %d\r\n", ESP.getFreeHeap());
+  if (millis() - lastT > 5000) {
     lastT = millis();
+    Serial.printf("[HEAP] int:%u/%u psram:%u/%u\r\n",
+                  (unsigned)heap_caps_get_free_size(MALLOC_CAP_INTERNAL),
+                  (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_INTERNAL),
+                  (unsigned)heap_caps_get_free_size(MALLOC_CAP_SPIRAM),
+                  (unsigned)heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM));
   }
+  */
 }
 
 void loopSecondary(void *pvParameters) {
@@ -81,8 +143,7 @@ void serialEventRun() {
 }
 
 void onBleReceived(BLECharacteristic *pCharacteristic) {
-  std::string rxValue = pCharacteristic->getValue();
-  static String bleInputString = "";
+  String rxValue = pCharacteristic->getValue().c_str();
   if (rxValue.length() > 0) {
     for (int i = 0; i < rxValue.length(); i++) {
       bleInputString += rxValue[i];
@@ -91,11 +152,14 @@ void onBleReceived(BLECharacteristic *pCharacteristic) {
         bleInputString = "";
       }
     }
+    if (bleInputString.length() > RX_LINE_MAX_LEN) {
+      Serial.println("ble rx overflow, buffer reset");
+      bleInputString = "";
+    }
   }
 }
 
 void onWiFiCmdReceived(WiFiClient *client) {
-  static String wifiInputString = "";
   while (client->available()) {
     char rv[1024];
     int ret = client->read((uint8_t *)rv, sizeof(rv));
@@ -106,6 +170,10 @@ void onWiFiCmdReceived(WiFiClient *client) {
         enterMessageQueue(wifiInputString);
         wifiInputString = "";
       }
+    }
+    if (wifiInputString.length() > RX_LINE_MAX_LEN) {
+      Serial.println("wifi rx overflow, buffer reset");
+      wifiInputString = "";
     }
   }
 }
@@ -124,11 +192,17 @@ void enterMessageQueue(String msg) {
     case ACTION_CALIBRATE:
     case ACTION_UP_DOWN:
     case ACTION_BODY_HEIGHT:
-    case ACTION_MOVE_ANY:
     case ACTION_TWIST:
     case ACTION_DANCING:
-      mqMotion.enterForced(msg);
-      controlTask(TASK_MOTION_SERVICE, TASK_RESUME);
+      enqueueMotion(msg);
+      break;
+    case ACTION_MOVE_ANY:
+      if (isStopMotionMsg(msg)) {
+        motionStopPending = true;
+        flushPendingMotionStop();
+      } else {
+        enqueueMotion(msg);
+      }
       break;
     default:
       mqInfo.enterForced(msg);

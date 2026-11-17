@@ -1,9 +1,9 @@
 /**
  * @file BatteryPower.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Read, monitor and upload battery power.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -17,104 +17,66 @@
   Auther      : www.freenove.com
   Modification: 2020/07/11
 **********************************************************************/
-#include "esp_adc_cal.h"
-#define PIN_ANALOG_IN PIN_BATT // A10, ADC2_CHANNEL_0
+#include "esp_adc/adc_oneshot.h"
+#include "esp_adc/adc_cali.h"
+#include "esp_adc/adc_cali_scheme.h"
+#define PIN_ANALOG_IN PIN_BATT // ADC1:GPIO32
 
 #define DEFAULT_VREF 1100 // Default vref
 #define NUM_OF_SAMPLES 64 // 64 // Multisampling, and get average
 
-adc_channel_t channel = ADC_CHANNEL_4; // ADC1:GPIO32, ADC2:GPIO13
+adc_channel_t channel = ADC_CHANNEL_4; // ADC1:GPIO32
 adc_unit_t unit = ADC_UNIT_1;          // ADC1
-adc_atten_t atten = ADC_ATTEN_DB_11;   // Full scale 0-3.9V, precision range 150mV-2450mV
+adc_atten_t atten = ADC_ATTEN_DB_12;   // Full scale 0-3.9V, precision range 150mV-2450mV
 
-esp_adc_cal_characteristics_t *adc_chars;
+static adc_oneshot_unit_handle_t adc_handle = NULL;
+static adc_cali_handle_t adc_cali_handle = NULL;
+static bool adc_cali_ready = false;
 
-esp_adc_cal_value_t val_type;
-
-void check_efuse();
-void print_char_val_type(esp_adc_cal_value_t val_type);
 void setupAdc()
 {
-    // Check if Two Point or Vref are burned into eFuse
-    // check_efuse();
-    // Configure ADC
-    if (unit == ADC_UNIT_1)
-    { // ADC1 and ADC2 are initialized differently
-        adc1_config_width(ADC_WIDTH_BIT_12);
-        adc1_config_channel_atten((adc1_channel_t)channel, atten);
-    }
-    else
-    {
-        adc2_config_channel_atten((adc2_channel_t)channel, atten);
-    }
-    // Characterize ADC
-    adc_chars = (esp_adc_cal_characteristics_t *)calloc(1, sizeof(esp_adc_cal_characteristics_t));
-    esp_adc_cal_value_t val_type = esp_adc_cal_characterize(unit, atten, ADC_WIDTH_BIT_12, DEFAULT_VREF, adc_chars);
-    // print_char_val_type(val_type);
+    adc_oneshot_unit_init_cfg_t unit_cfg = {};
+    unit_cfg.unit_id = unit;
+    unit_cfg.ulp_mode = ADC_ULP_MODE_DISABLE;
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&unit_cfg, &adc_handle));
+
+    adc_oneshot_chan_cfg_t chan_cfg = {
+        .atten = atten,
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+    };
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc_handle, channel, &chan_cfg));
+
+    adc_cali_line_fitting_config_t cali_cfg = {};
+    cali_cfg.unit_id = unit;
+    cali_cfg.atten = atten;
+    cali_cfg.bitwidth = ADC_BITWIDTH_DEFAULT;
+    adc_cali_ready = (adc_cali_create_scheme_line_fitting(&cali_cfg, &adc_cali_handle) == ESP_OK);
 }
 
 uint32_t getBatteryVoltage()
 {
     uint32_t adc_reading = 0;
+    int raw = 0;
     pthread_mutex_lock(&mutexPin33); //lock
     for (int i = 0; i < NUM_OF_SAMPLES; i++)
     { //  Multisampling
-        if (unit == ADC_UNIT_1)
-        {
-            adc_reading += adc1_get_raw((adc1_channel_t)channel);
-        }
-        else
-        {
-            int raw;
-            adc2_get_raw((adc2_channel_t)channel, ADC_WIDTH_BIT_12, &raw);
-            adc_reading += raw;
-        }
+        adc_oneshot_read(adc_handle, channel, &raw);
+        adc_reading += raw;
     }
     adc_reading /= NUM_OF_SAMPLES;
     // Convert adc_reading to voltage in mV
-    uint32_t voltage = esp_adc_cal_raw_to_voltage(adc_reading, adc_chars);
+    int voltage = 0;
+    if (adc_cali_ready)
+    {
+        adc_cali_raw_to_voltage(adc_cali_handle, (int)adc_reading, &voltage);
+    }
+    else
+    {
+        voltage = (int)(adc_reading * DEFAULT_VREF / 4095.0);
+    }
     // printf("Raw: %d\tVoltage: %dmV\n", adc_reading, voltage);
     pthread_mutex_unlock(&mutexPin33); //unlock
     return voltage * VOLATAGE_RATIO;
-}
-
-void check_efuse()
-{
-    // Check TP is burned into eFuse
-    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_TP) == ESP_OK)
-    {
-        printf("eFuse Two Point: Supported\n");
-    }
-    else
-    {
-        printf("eFuse Two Point: NOT supported\n");
-    }
-
-    // Check Vref is burned into eFuse
-    if (esp_adc_cal_check_efuse(ESP_ADC_CAL_VAL_EFUSE_VREF) == ESP_OK)
-    {
-        printf("eFuse Vref: Supported\n");
-    }
-    else
-    {
-        printf("eFuse Vref: NOT supported\n");
-    }
-}
-
-void print_char_val_type(esp_adc_cal_value_t val_type)
-{
-    if (val_type == ESP_ADC_CAL_VAL_EFUSE_TP)
-    {
-        printf("Characterized using Two Point Value\n");
-    }
-    else if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF)
-    {
-        printf("Characterized using eFuse Vref\n");
-    }
-    else
-    {
-        printf("Characterized using Default Vref\n");
-    }
 }
 
 uint32_t batteryVoltage = 0; // unit: mV
@@ -173,7 +135,7 @@ void task_BatteryPowerListener(void *pvParameters)
                 {
                     setMelodyToQueue(MELODY_LOW_POWER);
                 }
-                Serial.printf("Low Power : %d ,%d\n", batteryVoltage, batteryPercent);                
+                Serial.printf("Low Power : %lu ,%d\n", batteryVoltage, batteryPercent);
                 lastWaringTime = millis();
             }
             lastReadBatteryTime = millis();

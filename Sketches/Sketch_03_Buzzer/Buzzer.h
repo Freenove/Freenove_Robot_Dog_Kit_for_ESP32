@@ -1,14 +1,3 @@
-/**
- * @file Buzzer.h
- * @author suhayl@freenove (support@freenove.com)
- * @brief Buzzer service.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #ifndef _BUZZER_h
 #define _BUZZER_h
 

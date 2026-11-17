@@ -1,3 +1,13 @@
+/**
+ * @file Sketch_07_Action.ino
+ * @author ZhentaoLin@freenove (support@freenove.com)
+ * @brief Control the robot dog to perform some actions.
+ * @version Arduino esp32 version v3.3.12
+ * @date 2026-11-14
+ * 
+ * @copyright Copyright (c) 2022. Freenove corporation.
+ * 
+ */
 #include "Motion.h"
 
 /*

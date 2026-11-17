@@ -1,9 +1,9 @@
 /**
  * @file Freenove_PCA9685.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief PCA9685 driver. Servo pwm driver.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -91,9 +91,8 @@ Freenove_PCA9685::Freenove_PCA9685(u8 i2c_addr)
 int Freenove_PCA9685::begin()
 {
 	// Wire.begin();
-	Wire.begin(PIN_SDA, PIN_SCL);
+	Wire.begin(PIN_SDA, PIN_SCL, 100000);
 	// detect();
-	Wire.setClock(100000);
 	writeReg(MODE1, 0x00);
 	int error = Wire.endTransmission();
 

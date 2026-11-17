@@ -1,9 +1,9 @@
 /**
  * @file BluetoothService.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Bluetooth Gatt Service.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -11,14 +11,11 @@
 
 #include "BluetoothService.h"
 
-class BLEServer;
-class BLECharacteristic;
-class BLEServerCallbacks;
-
 BLEServer *pServer = NULL;
 BLECharacteristic *pTxCharacteristic;
-bool isBleConnected = false;
+volatile bool isBleConnected = false;
 bool oldBleConnected = false;
+volatile uint16_t bleConnHandle = 0;
 uint8_t txValue = 0;
 
 DataQueue<String> mqTx(100); // Ble message
@@ -32,8 +29,9 @@ DataQueue<String> mqTx(100); // Ble message
 
 class MyServerCallbacks : public BLEServerCallbacks
 {
-	void onConnect(BLEServer *pServer)
+	void onConnect(BLEServer *pServer, BLEConnInfo &connInfo)
 	{
+		bleConnHandle = connInfo.getConnHandle();
 		isBleConnected = true;
 		// connecting
 		if (isBleConnected && !oldBleConnected)
@@ -46,15 +44,13 @@ class MyServerCallbacks : public BLEServerCallbacks
 		}
 	};
 
-	void onDisconnect(BLEServer *pServer)
+	void onDisconnect(BLEServer *pServer, BLEConnInfo &connInfo, int reason)
 	{
 		isBleConnected = false;
+		Serial.printf("ble onDisconnect, reason=%d\n", reason);
 		// disconnecting
 		if (!isBleConnected && oldBleConnected)
 		{
-			delay(500);					 // give the bluetooth stack the chance to get things ready
-			pServer->startAdvertising(); // restart advertising
-			Serial.println("start advertising");
 			oldBleConnected = isBleConnected;
 
 			enterMessageQueue(String(ACTION_UP_DOWN) + "#2#\n");
@@ -67,11 +63,14 @@ class MyServerCallbacks : public BLEServerCallbacks
 
 class MyCallbacks : public BLECharacteristicCallbacks
 {
-	void onWrite(BLECharacteristic *pCharacteristic)
+	void onWrite(BLECharacteristic *pCharacteristic, BLEConnInfo &connInfo)
 	{
 		onBleReceived(pCharacteristic);
 	}
 };
+
+static MyServerCallbacks serverCallbacks;
+static MyCallbacks characteristicCallbacks;
 
 // void  __attribute__((weak)) onBleReceived(BLECharacteristic *pCharacteristic) {
 // 	std::string rxValue = pCharacteristic->getValue();
@@ -93,12 +92,13 @@ void bleSetup()
 	// Create the BLE Device
 	String s = String("Freenove-Dog-") + getRobotId();
 
-	BLEDevice::init(std::string(s.c_str()));
+	BLEDevice::init(s.c_str());
 	BLEDevice::setMTU(512);
 	// BLEDevice::setMTU(50);
 	//  Create the BLE Server
 	pServer = BLEDevice::createServer();
-	pServer->setCallbacks(new MyServerCallbacks());
+	pServer->setCallbacks(&serverCallbacks);
+	pServer->advertiseOnDisconnect(true);
 
 	// Create the BLE Service
 	BLEService *pService = pServer->createService(SERVICE_UUID);
@@ -106,15 +106,12 @@ void bleSetup()
 	// Create a BLE Characteristic
 	pTxCharacteristic = pService->createCharacteristic(
 		CHARACTERISTIC_UUID_TX,
-		BLECharacteristic::PROPERTY_NOTIFY);
+		NIMBLE_PROPERTY::READ |
+		NIMBLE_PROPERTY::WRITE |
+		NIMBLE_PROPERTY::WRITE_NR |
+		NIMBLE_PROPERTY::NOTIFY);
 
-	pTxCharacteristic->addDescriptor(new BLE2902());
-
-	BLECharacteristic *pRxCharacteristic = pService->createCharacteristic(
-		CHARACTERISTIC_UUID_RX,
-		BLECharacteristic::PROPERTY_WRITE);
-
-	pRxCharacteristic->setCallbacks(new MyCallbacks());
+	pTxCharacteristic->setCallbacks(&characteristicCallbacks);
 
 	// Start the service
 	pService->start();
@@ -124,27 +121,21 @@ void bleSetup()
 	Serial.println("Bluetooth initialization complete, Waiting a client connection to notify...");
 }
 
-void bleRestart()
+void bleDisconnectClient()
 {
-	// pServer->start();
-	//  Start advertising
-	// pServer->getAdvertising()->start();
-	//BLEDevice::init();
-	bleSetup();
-}
-
-void bleStop()
-{
-	BLEDevice::deinit();
-	// pServer->disconnect();
-	// pServer->getAdvertising()->stop();
+	if (pServer == NULL || !isBleConnected)
+	{
+		return;
+	}
+	bool ok = pServer->disconnect(bleConnHandle);
+	Serial.printf("ble disconnect connId=%u, rc=%d\n", bleConnHandle, (int)ok);
 }
 
 void bleSend(std::string msg)
 {
-	if (isBleConnected)
+	if (isBleConnected && pTxCharacteristic != NULL)
 	{
-		pTxCharacteristic->setValue(msg);
+		pTxCharacteristic->setValue(msg.c_str());
 		pTxCharacteristic->notify();
 	}
 }

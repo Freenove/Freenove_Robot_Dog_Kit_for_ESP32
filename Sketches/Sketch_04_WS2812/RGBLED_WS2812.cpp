@@ -1,14 +1,3 @@
-/**
- * @file RGBLED_WS2812.cpp
- * @author suhayl@freenove (support@freenove.com)
- * @brief WS2812 RGB LED driver and service.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #include "RGBLED_WS2812.h"
 
 Freenove_ESP32_WS2812 strip = Freenove_ESP32_WS2812(LEDS_COUNT, LEDS_PIN, CHANNEL, TYPE_GRB);
@@ -25,7 +14,7 @@ int breathingStep = 2;
 int rainbowStep = 2;
 bool blinkStateUp = true;
 bool breathingStateUp = true;
-u32 lastStripUpdateTime = 0;
+uint32_t lastStripUpdateTime = 0;
 
 void setupRGBLED() {
   strip.begin();

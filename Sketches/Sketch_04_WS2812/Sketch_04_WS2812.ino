@@ -1,16 +1,16 @@
 /**
  * @file Sketch_04_WS2812.ino
- * @author suhayl@freenove (support@freenove.com)
+ * @author ZhentaoLin@freenove (support@freenove.com)
  * @brief WS2812 RGB LED driver and service.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version Arduino esp32 version v3.3.12
+ * @date 2026-11-14
  * 
- * @copyright Copyright (c) 2022. Freenove corporation.
+ * @copyright Copyright (c) 2026. Freenove corporation.
  * 
  */
 #include "RGBLED_WS2812.h"
 
-u8 m_color[5][3] = { { 255, 0, 0 }, { 0, 255, 0 }, { 0, 0, 255 }, { 255, 255, 255 }, { 0, 0, 0 } };
+uint8_t m_color[5][3] = { { 255, 0, 0 }, { 0, 255, 0 }, { 0, 0, 255 }, { 255, 255, 255 }, { 0, 0, 0 } };
 
 void setup() {
   setupRGBLED();

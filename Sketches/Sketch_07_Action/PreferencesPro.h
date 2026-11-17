@@ -1,14 +1,3 @@
-/**
- * @file PreferencesPro.h
- * @author suhayl@freenove (support@freenove.com)
- * @brief More powerful storage class, which can store any type of data.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #ifndef _PREFERENCESPRO_h
 #define _PREFERENCESPRO_h
 

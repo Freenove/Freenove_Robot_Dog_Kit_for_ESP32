@@ -1,14 +1,3 @@
-/**
- * @file Motion.h
- * @author suhayl@freenove (support@freenove.com)
- * @brief Code of motion, Including coordinate angle conversion, walking posture control, body length definition and so on.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #ifndef _MOTION_h
 #define _MOTION_h
 

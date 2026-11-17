@@ -14,7 +14,7 @@ class BLEServerCallbacks;
 
 void bleSetup();
 void bleStop();
-void bleSend(std::string msg);
+void bleSend(String msg);
 extern void onBleReceived(BLECharacteristic *pCharacteristic);
 
 #endif

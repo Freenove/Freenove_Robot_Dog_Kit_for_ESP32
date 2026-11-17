@@ -1,9 +1,9 @@
 /**
  * @file TaskCommandService.cpp
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Non-motion command execution server.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -97,7 +97,7 @@ void task_CommandService(void *pvParameters)
 			case ACTION_GET_VOLTAGE:
 				if (mpi.paramterCount >= 0)
 				{
-					Serial.printf("Battery Voltage : %d \n", getBatteryVoltage() * 4);
+					Serial.printf("Battery Voltage : %lu \n", getBatteryVoltage() * 4);
 				}
 				break;
 			case ACTION_SET_ROBOT:
@@ -123,6 +123,7 @@ void task_CommandService(void *pvParameters)
 					}
 					break;
 				}
+				break;
 			case ACTION_AUTO_WALKING:
 				if (mpi.paramterCount >= 1)
 				{

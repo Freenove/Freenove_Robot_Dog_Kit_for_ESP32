@@ -1,9 +1,9 @@
 /**
  * @file Buzzer.h
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Buzzer service.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -15,6 +15,9 @@
 #include "NoteFrequency.h"
 #include "Public.h"
 #include "driver/ledc.h"
+
+// 蜂鸣器编译期总开关：1 = 启用，0 = 静音（调试阶段可关闭）
+#define BUZZER_ENABLE 0
 
 #define MELODY_POWER_UP 0
 #define MELODY_LOW_POWER 1

@@ -1,9 +1,9 @@
 /**
  * @file Sketch_06_Touch.ino
- * @author suhayl@freenove (support@freenove.com)
+ * @author ZhentaoLin@freenove (support@freenove.com)
  * @brief Touchpad driver and service.
- * @version v1.0.0
- * @date 2022-04-13
+ * @version Arduino esp32 version v3.3.12
+ * @date 2026-11-14
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 

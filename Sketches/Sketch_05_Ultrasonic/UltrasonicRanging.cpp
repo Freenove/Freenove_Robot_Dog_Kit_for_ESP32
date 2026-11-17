@@ -1,14 +1,3 @@
-/**
- * @file UltrasonicRanging.cpp
- * @author suhayl@freenove (support@freenove.com)
- * @brief Ultrasonic ranging driver and serive.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #include "UltrasonicRanging.h"
 
 constexpr int MAX_DISTANCE = 300;             // Maximum sensor distance is rated at 400-500cm.

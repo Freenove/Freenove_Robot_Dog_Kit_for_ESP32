@@ -1,37 +1,24 @@
-/**
- * @file Buzzer.cpp
- * @author suhayl@freenove (support@freenove.com)
- * @brief Buzzer service.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #include "Buzzer.h"
 
 #define BUZZER_PIN (33)
-#define BUZZER_CHN (0)
 #define BUZZER_BIT (10)
 #define BUZZER_FREQ (5000)
 
 int melody = -1;
 
 void setupBuzzer() {
-  ledcSetup(BUZZER_CHN, BUZZER_FREQ, BUZZER_BIT);  // setup pwm channel
-  ledcAttachPin(BUZZER_PIN, BUZZER_CHN);
-  ledcWrite(BUZZER_CHN, 0);
-  ledcWriteTone(BUZZER_CHN, 0);
+  ledcAttach(BUZZER_PIN, BUZZER_FREQ, BUZZER_BIT);  // attach pin, channel auto-assigned
+  ledcWrite(BUZZER_PIN, 0);
+  ledcWriteTone(BUZZER_PIN, 0);
 }
 
 void setBuzzer(uint16_t freq) {
   if (freq != 0) {
-    ledcWrite(BUZZER_CHN, 512);
-    ledcWriteTone(BUZZER_CHN, freq);
+    ledcWrite(BUZZER_PIN, 512);
+    ledcWriteTone(BUZZER_PIN, freq);
   } else {
-    ledcWrite(BUZZER_CHN, 0);
-    ledcWriteTone(BUZZER_CHN, 0);
+    ledcWrite(BUZZER_PIN, 0);
+    ledcWriteTone(BUZZER_PIN, 0);
   }
 }
 

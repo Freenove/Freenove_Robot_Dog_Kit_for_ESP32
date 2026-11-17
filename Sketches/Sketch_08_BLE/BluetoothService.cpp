@@ -47,7 +47,7 @@ void bleSetup() {
   // Create the BLE Device
   String s = String("Freenove-Dog");
 
-  BLEDevice::init(std::string(s.c_str()));
+  BLEDevice::init(s);
   BLEDevice::setMTU(512);
   //  Create the BLE Server
   pServer = BLEDevice::createServer();
@@ -81,7 +81,7 @@ void bleStop() {
   BLEDevice::deinit();
 }
 
-void bleSend(std::string msg) {
+void bleSend(String msg) {
   if (isBleConnected) {
     pTxCharacteristic->setValue(msg);
     pTxCharacteristic->notify();

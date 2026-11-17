@@ -1,14 +1,3 @@
-/**
- * @file BatteryPower.h
- * @author suhayl@freenove (support@freenove.com)
- * @brief Read, monitor and upload battery power.
- * @version v1.0.0
- * @date 2022-04-13
- * 
- * @copyright Copyright (c) 2022. Freenove corporation.
- * 
- */
-
 #ifndef _BATTERYVOLTAGE_h
 #define _BATTERYVOLTAGE_h
 

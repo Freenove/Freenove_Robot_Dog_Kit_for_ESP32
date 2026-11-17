@@ -1,9 +1,9 @@
 /**
  * @file Public.h
- * @author suhayl@freenove (support@freenove.com)
+ * @author zhentao lin@freenove (support@freenove.com)
  * @brief Public resource concentration statement
- * @version v1.0.0
- * @date 2022-04-13
+ * @version v1.2.0
+ * @date 2026-11-17
  * 
  * @copyright Copyright (c) 2022. Freenove corporation.
  * 
@@ -12,14 +12,9 @@
 #ifndef _PUBLIC_h
 #define _PUBLIC_h
 #include <Arduino.h>
-#include "esp_pm.h"
-#include "esp32/pm.h"
 #include <pthread.h>
-#include "esp32/spiram.h"
-#include "esp32/himem.h"
 
 #include "esp_wifi.h"
-#include "esp_adc_cal.h"
 #include "RobotDefinitions.h"
 #include "BatteryPower.h"
 #include "TouchPad.h"
@@ -75,5 +70,6 @@ extern PreferencesPro prefs;
 extern pthread_mutex_t mutexPin33;
 
 extern void enterMessageQueue(String msg);
+extern void clearRxLineBuffers();
 
 #endif
