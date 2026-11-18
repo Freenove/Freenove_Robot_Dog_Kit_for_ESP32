@@ -1,7 +1,7 @@
 /**
  * @file Sketch_08_BLE.ino
  * @author ZhentaoLin@freenove (support@freenove.com)
- * @brief BLE service.
+ * @brief BLE service (NimBLE-Arduino).
  * @version Arduino esp32 version v3.3.12
  * @date 2026-11-14
  * 
@@ -22,7 +22,7 @@ void loop() {
   delay(3000);
 }
 
-void onBleReceived(BLECharacteristic *pCharacteristic) {
+void onBleReceived(NimBLECharacteristic *pCharacteristic) {
   String rxValue = pCharacteristic->getValue();
   static String bleInputString = "";
   Serial.print("onBleReceived: ");
