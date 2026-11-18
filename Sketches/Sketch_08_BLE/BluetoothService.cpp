@@ -7,14 +7,14 @@
 #define CHARACTERISTIC_UUID_RX "0000ffe1-0000-1000-8000-00805f9b34fb"
 #define CHARACTERISTIC_UUID_TX "0000ffe1-0000-1000-8000-00805f9b34fb"
 
-BLEServer *pServer = NULL;
-BLECharacteristic *pTxCharacteristic;
+NimBLEServer *pServer = NULL;
+NimBLECharacteristic *pTxCharacteristic;
 bool isBleConnected = false;
 bool oldBleConnected = false;
 uint8_t txValue = 0;
 
-class MyServerCallbacks : public BLEServerCallbacks {
-  void onConnect(BLEServer *pServer) {
+class MyServerCallbacks : public NimBLEServerCallbacks {
+  void onConnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo) {
     isBleConnected = true;
     // connecting
     if (isBleConnected && !oldBleConnected) {
@@ -24,7 +24,7 @@ class MyServerCallbacks : public BLEServerCallbacks {
     }
   };
 
-  void onDisconnect(BLEServer *pServer) {
+  void onDisconnect(NimBLEServer *pServer, NimBLEConnInfo &connInfo, int reason) {
     isBleConnected = false;
     // disconnecting
     if (!isBleConnected && oldBleConnected) {
@@ -37,48 +37,51 @@ class MyServerCallbacks : public BLEServerCallbacks {
   }
 };
 
-class MyCallbacks : public BLECharacteristicCallbacks {
-  void onWrite(BLECharacteristic *pCharacteristic) {
+class MyCallbacks : public NimBLECharacteristicCallbacks {
+  void onWrite(NimBLECharacteristic *pCharacteristic, NimBLEConnInfo &connInfo) {
     onBleReceived(pCharacteristic);
   }
 };
 
 void bleSetup() {
   // Create the BLE Device
-  String s = String("Freenove-Dog");
+  const char *deviceName = "Freenove-Dog";
 
-  BLEDevice::init(s);
-  BLEDevice::setMTU(512);
+  NimBLEDevice::init(deviceName);
+  NimBLEDevice::setMTU(512);
   //  Create the BLE Server
-  pServer = BLEDevice::createServer();
+  pServer = NimBLEDevice::createServer();
   pServer->setCallbacks(new MyServerCallbacks());
 
   // Create the BLE Service
-  BLEService *pService = pServer->createService(SERVICE_UUID);
+  NimBLEService *pService = pServer->createService(SERVICE_UUID);
 
   // Create a BLE Characteristic
+  // NimBLE automatically creates the 0x2902 CCCD for NOTIFY/INDICATE characteristics
   pTxCharacteristic = pService->createCharacteristic(
     CHARACTERISTIC_UUID_TX,
-    BLECharacteristic::PROPERTY_NOTIFY);
+    NIMBLE_PROPERTY::NOTIFY);
 
-  pTxCharacteristic->addDescriptor(new BLE2902());
-
-  BLECharacteristic *pRxCharacteristic = pService->createCharacteristic(
+  NimBLECharacteristic *pRxCharacteristic = pService->createCharacteristic(
     CHARACTERISTIC_UUID_RX,
-    BLECharacteristic::PROPERTY_WRITE);
+    NIMBLE_PROPERTY::WRITE);
 
   pRxCharacteristic->setCallbacks(new MyCallbacks());
 
   // Start the service
   pService->start();
 
-  // Start advertising
-  pServer->getAdvertising()->start();
+  // Start advertising (setName makes the nickname visible in BLE scans)
+  NimBLEAdvertising *pAdvertising = pServer->getAdvertising();
+  pAdvertising->setName(deviceName);
+  pAdvertising->addServiceUUID(SERVICE_UUID);
+  pAdvertising->enableScanResponse(true);
+  pAdvertising->start();
   Serial.println("Bluetooth initialization complete, Waiting a client connection to notify...");
 }
 
 void bleStop() {
-  BLEDevice::deinit();
+  NimBLEDevice::deinit();
 }
 
 void bleSend(String msg) {
