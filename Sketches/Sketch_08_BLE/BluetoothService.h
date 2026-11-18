@@ -3,18 +3,11 @@
 
 #include "Arduino.h"
 
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
-
-class BLEServer;
-class BLECharacteristic;
-class BLEServerCallbacks;
+#include <NimBLEDevice.h>
 
 void bleSetup();
 void bleStop();
 void bleSend(String msg);
-extern void onBleReceived(BLECharacteristic *pCharacteristic);
+extern void onBleReceived(NimBLECharacteristic *pCharacteristic);
 
 #endif
